@@ -1,0 +1,39 @@
+# Xcode
+build/
+DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcuserdata/
+xcuserdata/
+
+# SwiftPM
+.build/
+
+# CocoaPods
+Pods/
+podfile.lock
+*.xcworkspace
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Archives
+*.xcarchive
+
+# iOS specific
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Logs
+*.log
+
+# User-specific
+*.swp
+*.swo
+.DS_Store
