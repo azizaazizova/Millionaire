@@ -1,38 +1,27 @@
 import SwiftUI
 
 struct ResultView: View {
-    @ObservedObject var coordinator: AppCoordinator
-    let amount: Int
+    let persistence: PersistenceService
 
     var body: some View {
         ZStack {
+            // Фон через модификатор
+            Color.clear.millionaireBackground()
+
             VStack(spacing: 24) {
-                Spacer()
+                Text("Игра завершена")
+                    .font(.title).bold()
+                    .foregroundColor(.white)
 
-                Text(amount > 0 ? "Поздравляем!" : "Игра окончена!")
-                    .font(.title).bold().foregroundColor(.white)
+                Text("Ваш приз: $1000")
+                    .font(.title2)
+                    .foregroundColor(.yellow)
 
-                Text("$\(amount)")
-                    .font(.largeTitle)
-                    .foregroundColor(amount > 0 ? .green : .red)
-
-                BrandButton(title: "Новая игра") {
-                    coordinator.startNewGame()
+                NavigationLink(destination: HomeView(persistence: persistence)) {
+                    BrandButton(title: "На главную")
                 }
-
-                BrandButton(title: "Главный экран", action: {
-                    coordinator.goToHome()
-                }, filled: false)
-
-                Spacer()
             }
-            .padding(.horizontal, 24)
+            .padding()
         }
-        .millionaireBackground()
-        .overlay(Color.black.opacity(0.3))
     }
-}
-
-#Preview {
-    ResultView(coordinator: AppCoordinator(), amount: 15000)
 }

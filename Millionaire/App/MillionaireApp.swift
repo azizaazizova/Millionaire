@@ -1,24 +1,24 @@
 import SwiftUI
-
 @main
 struct MillionaireApp: App {
-    @StateObject private var coordinator = AppCoordinator()
-    private let persistence = PersistenceService() // ✅ просто обычный объект
+    private let persistence = PersistenceService()
+    @State private var showSplash = true
 
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $coordinator.path) {
-                switch coordinator.startRoute {
-                case .splash:
-                    SplashView(onFinish: { coordinator.goToHome() })
-                case .home:
-                    HomeView(coordinator: coordinator, persistence: persistence)
-                case .game:
-                    GameView(coordinator: coordinator, persistence: persistence)
-                case .result(let amount):
-                    ResultView(coordinator: coordinator, amount: amount)
+            if showSplash {
+                SplashView()
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            showSplash = false
+                        }
+                    }
+            } else {
+                NavigationStack {
+                    HomeView(persistence: persistence) // ✅ root экран
                 }
             }
         }
     }
 }
+
