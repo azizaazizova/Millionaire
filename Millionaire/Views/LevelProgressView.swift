@@ -1,34 +1,47 @@
 import SwiftUI
 
 struct LevelProgressView: View {
-    let currentIndex: Int
+    // Пример данных — список уровней и призов
+    let levels: [String] = [
+        "$100", "$200", "$300", "$500",
+        "$1,000", "$2,000", "$4,000", "$8,000",
+        "$16,000", "$32,000", "$64,000", "$125,000",
+        "$250,000", "$500,000", "$1,000,000"
+    ]
+
+    // Текущий уровень игрока
+    let currentLevel: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ForEach(PrizeLevel.all.reversed(), id: \.id) { level in
-                HStack {
-                    Text("\(level.id).")
-                        .frame(width: 24, alignment: .leading)
-                        .foregroundColor(.white)
-                    Text("$\(level.amount)")
-                        .bold(level.safe ? true : false)
-                        .foregroundColor(color(for: level))
-                    Spacer()
-                }
-                .padding(.vertical, 4)
-            }
-        }
-        .padding()
-        .background(Color.black.opacity(0.4))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-    }
+        ZStack {
+            // Фон через модификатор
+            Color.clear.millionaireBackground()
 
-    private func color(for level: PrizeLevel) -> Color {
-        if level.id - 1 == currentIndex { return .orange }
-        return level.safe ? .yellow : .white
+            VStack(spacing: 12) {
+                Text("Прогресс игры")
+                    .font(.title2).bold()
+                    .foregroundColor(.yellow)
+
+                ForEach(levels.indices.reversed(), id: \.self) { index in
+                    HStack {
+                        Text(levels[index])
+                            .font(.headline)
+                            .foregroundColor(index == currentLevel ? .black : .white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(index == currentLevel ? Color.yellow : Color.clear)
+                            )
+                    }
+                }
+            }
+            .padding()
+        }
     }
 }
 
+
 #Preview {
-    LevelProgressView(currentIndex: 5)
+    LevelProgressView(currentLevel: 5)
 }
