@@ -36,4 +36,4 @@ fastlane/test_output
 # User-specific
 *.swp
 *.swo
-.DS_Store
+.DS_Store*/xcuserdata/*

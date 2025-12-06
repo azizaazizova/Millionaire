@@ -18,13 +18,11 @@ class GameViewModel: ObservableObject {
         self.questions = QuestionService.loadQuestions()
 
         if questions.isEmpty {
-            // Нет вопросов — завершаем игру безопасно
             isFinished = true
             currentIndex = 0
             return
         }
 
-        // Загружаем сохранённую игру и НОРМАЛИЗУЕМ индекс
         if let saved = persistence.load() {
             let safeIndex = max(0, min(saved.levelIndex, questions.count - 1))
             self.currentIndex = safeIndex
@@ -37,7 +35,6 @@ class GameViewModel: ObservableObject {
         if questions.indices.contains(currentIndex) {
             return questions[currentIndex]
         } else {
-            // При несоответствии индекса возвращаем первый вопрос (или делаем assert в дев-сборках)
             return questions.first!
         }
     }
@@ -59,7 +56,6 @@ class GameViewModel: ObservableObject {
                 self.goToNextQuestion()
             }
         } else if secondChanceActive {
-            // сбрасываем право на ошибку
             secondChanceActive = false
             isCorrect = nil
         } else {
@@ -92,23 +88,27 @@ class GameViewModel: ObservableObject {
     }
 
     // MARK: - Подсказки
-    func useFiftyFifty() {
-        guard !isGameFinished, hiddenIndices.isEmpty else { return }
+    /// 50:50 — возвращает скрытые индексы для UI
+    func useFiftyFifty() -> [Int] {
+        guard !isGameFinished, hiddenIndices.isEmpty else { return [] }
         let correct = currentQuestion.correctIndex
         let wrong = Set(currentQuestion.answers.indices).subtracting([correct])
         hiddenIndices = Set(Array(wrong.shuffled().prefix(2)))
+        return Array(hiddenIndices)
     }
 
-    func simulateCall() {
-        guard !isGameFinished else { return }
+    /// Звонок другу — возвращает текстовый совет
+    func simulateCall() -> String {
+        guard !isGameFinished else { return "Игра завершена" }
         let correct = currentQuestion.correctIndex
         let chance = Int.random(in: 1...100)
         let picked = chance <= 70 ? correct : currentQuestion.answers.indices.filter { $0 != correct }.randomElement()!
-        print("📞 Друг думает, что это: \(currentQuestion.answers[picked])")
+        return "Друг думает, что это: \(currentQuestion.answers[picked])"
     }
 
-    func simulateAudience() -> [Int: Int] {
-        guard !isGameFinished else { return [:] }
+    /// Помощь зала — возвращает массив для диаграммы
+    func simulateAudience() -> [(answer: String, percent: Int)] {
+        guard !isGameFinished else { return [] }
         let correct = currentQuestion.correctIndex
         var percentages: [Int: Int] = [:]
 
@@ -126,12 +126,15 @@ class GameViewModel: ObservableObject {
         for (i, idx) in wrongAnswers.enumerated() {
             percentages[idx] = distributed[i]
         }
-        return percentages
+
+        return percentages.map { (answer: currentQuestion.answers[$0.key], percent: $0.value) }
     }
 
-    func useSecondChance() {
-        guard !isGameFinished else { return }
+    /// Вторая попытка — возвращает сообщение для UI
+    func useSecondChance() -> String {
+        guard !isGameFinished else { return "Игра завершена" }
         secondChanceActive = true
+        return "Вторая попытка активирована!"
     }
 
     // MARK: - Persistence

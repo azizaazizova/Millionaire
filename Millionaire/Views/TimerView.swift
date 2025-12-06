@@ -4,37 +4,39 @@ struct TimerView: View {
     let seconds: Int
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 32)
-                .fill(timerColor())
-                .overlay(
-                    RoundedRectangle(cornerRadius: 32)
-                        .stroke(Color.purple, lineWidth: 2)
-                )
+        HStack(spacing: 6) {
+            Image(systemName: "stopwatch")
+                .foregroundColor(labelColor())
+                .font(.system(size: 16, weight: .semibold))
 
-            HStack {
-                Image(systemName: "stopwatch")
-                    .foregroundColor(iconColor())
-                Text(String(format: "%02d", seconds))
-                    .font(.headline)
-                    .foregroundColor(iconColor())
-            }
+            Text(String(format: "%02d", seconds))
+                .foregroundColor(labelColor())
+                .font(.system(size: 18, weight: .semibold))
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(backgroundColor())
+                .opacity(0.5)
+        )
+    }
+
+    // 🎨 Цвет фона
+    private func backgroundColor() -> Color {
+        switch seconds {
+        case 0...5: return Color.red.opacity(0.5)     // последние секунды — тревожный красный
+        case 6...15: return Color.yellow.opacity(0.5) // середина — напряжённый жёлтый
+        default: return Color.white.opacity(0.5)      // старт — спокойный белый
         }
     }
 
-    private func timerColor() -> Color {
+    // 🎨 Цвет текста и иконки
+    private func labelColor() -> Color {
         switch seconds {
-        case 0...5: return .red
-        case 6...15: return .orange
-        default: return Color(hex: "#1C2A4A")
-        }
-    }
-
-    private func iconColor() -> Color {
-        switch seconds {
-        case 0...5: return .white
-        case 6...15: return .red
-        default: return .orange
+        case 0...5: return .red   // на красном фоне — белый текст
+        case 6...15: return .yellow  // на жёлтом фоне — чёрный текст
+        default: return .white      // на белом фоне — чёрный текст
         }
     }
 }

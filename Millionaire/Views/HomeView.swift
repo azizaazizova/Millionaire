@@ -11,17 +11,16 @@ struct HomeView: View {
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            VStack(spacing: 12) {
+            VStack(spacing: 18) {
                 Spacer(minLength: 40)
 
                 Image("logo")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 320, height: 280)
+                    .frame(width: 195, height: 195)
 
                 Text("Кто хочет стать миллионером?")
-                    //.font(.title).bold()
-                    .font(.custom("Poppins-Bold", size: 30))
+                    .font(.title).bold()
                     .foregroundColor(.white)
 
                 if vm.canContinue {
