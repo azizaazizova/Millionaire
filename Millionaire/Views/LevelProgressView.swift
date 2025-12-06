@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct LevelProgressView: View {
-    // Пример данных — список уровней и призов
     let levels: [String] = [
         "$100", "$200", "$300", "$500",
         "$1,000", "$2,000", "$4,000", "$8,000",
@@ -9,12 +8,10 @@ struct LevelProgressView: View {
         "$250,000", "$500,000", "$1,000,000"
     ]
 
-    // Текущий уровень игрока
     let currentLevel: Int
 
     var body: some View {
         ZStack {
-            // Фон через модификатор
             Color.clear.millionaireBackground()
 
             VStack(spacing: 12) {
@@ -32,16 +29,18 @@ struct LevelProgressView: View {
                             .background(
                                 RoundedRectangle(cornerRadius: 8)
                                     .fill(index == currentLevel ? Color.yellow : Color.clear)
+                                    .animation(.easeInOut(duration: 0.3), value: currentLevel)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(index == currentLevel ? Color.orange : Color.clear, lineWidth: 2)
                             )
                     }
                 }
+
+                Spacer()
             }
             .padding()
         }
     }
-}
-
-
-#Preview {
-    LevelProgressView(currentLevel: 5)
 }

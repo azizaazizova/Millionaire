@@ -1,130 +1,147 @@
 import Foundation
 import Combine
 
-final class GameViewModel: ObservableObject {
-    @Published var question: Question
-    @Published var selectedIndex: Int? = nil
-    @Published var phase: GamePhase = .notStarted
-    @Published var highlightCorrectIndex: Int? = nil
-
-    private let questionService: QuestionService
+class GameViewModel: ObservableObject {
     private let persistence: PersistenceService
-    private var levelIndex: Int = 0
-    private var timeRemaining: Int = 30
-    private var timerCancellable: AnyCancellable?
 
-    init(questionService: QuestionService,
-         persistence: PersistenceService,
-         restored: SavedGame? = nil) {
-        self.questionService = questionService
+    @Published var questions: [Question]
+    @Published var currentIndex: Int = 0
+    @Published var selectedAnswer: Int? = nil
+    @Published var isCorrect: Bool? = nil
+    @Published var hiddenIndices: Set<Int> = []
+    @Published var wonAmount: Int = 0
+    @Published var secondChanceActive: Bool = false
+    @Published var isFinished: Bool = false
+
+    init(persistence: PersistenceService) {
         self.persistence = persistence
+        self.questions = QuestionService.loadQuestions()
 
-        if let restored {
-            levelIndex = restored.levelIndex
-            question = restored.question
-            phase = .asking(levelIndex: levelIndex, timeRemaining: 30)
-        } else {
-            question = questionService.question(for: levelIndex)
-            phase = .asking(levelIndex: levelIndex, timeRemaining: 30)
+        if questions.isEmpty {
+            // Нет вопросов — завершаем игру безопасно
+            isFinished = true
+            currentIndex = 0
+            return
         }
 
-        startTimer()
-        saveProgress()
+        // Загружаем сохранённую игру и НОРМАЛИЗУЕМ индекс
+        if let saved = persistence.load() {
+            let safeIndex = max(0, min(saved.levelIndex, questions.count - 1))
+            self.currentIndex = safeIndex
+            self.wonAmount = saved.wonAmount
+        }
     }
 
-    // MARK: - Таймер
-    func startTimer() {
-        timerCancellable?.cancel()
-        timeRemaining = 30
-        phase = .asking(levelIndex: levelIndex, timeRemaining: timeRemaining)
-
-        timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                guard let self else { return }
-                if self.timeRemaining > 0 {
-                    self.timeRemaining -= 1
-                    self.phase = .asking(levelIndex: self.levelIndex,
-                                         timeRemaining: self.timeRemaining)
-                } else {
-                    self.handleTimeout()
-                }
-            }
+    // Безопасный доступ к текущему вопросу
+    var currentQuestion: Question {
+        if questions.indices.contains(currentIndex) {
+            return questions[currentIndex]
+        } else {
+            // При несоответствии индекса возвращаем первый вопрос (или делаем assert в дев-сборках)
+            return questions.first!
+        }
     }
 
-    // MARK: - Выбор ответа
+    var isGameFinished: Bool {
+        isFinished || questions.isEmpty
+    }
+
+    // MARK: - Логика ответов
     func selectAnswer(_ index: Int) {
-        guard case .asking = phase, selectedIndex == nil else { return }
-        selectedIndex = index
-        let correct = index == question.correctIndex
-        highlightCorrectIndex = question.correctIndex
-        phase = .answered(correct: correct, levelIndex: levelIndex)
+        guard !isGameFinished else { return }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
-            self?.proceedAfterAnswer(correct: correct)
-        }
-    }
+        selectedAnswer = index
+        isCorrect = (index == currentQuestion.correctIndex)
 
-    private func handleTimeout() {
-        highlightCorrectIndex = question.correctIndex
-        phase = .answered(correct: false, levelIndex: levelIndex)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            self?.finish(withWin: false)
-        }
-    }
-
-    // MARK: - Переходы
-    private func proceedAfterAnswer(correct: Bool) {
-        if correct {
-            levelIndex += 1
-            if levelIndex >= PrizeLevel.all.count {
-                finish(withWin: true)
-            } else {
-                nextQuestion()
+        if isCorrect == true {
+            wonAmount = currentQuestion.prize
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.goToNextQuestion()
             }
+        } else if secondChanceActive {
+            // сбрасываем право на ошибку
+            secondChanceActive = false
+            isCorrect = nil
         } else {
-            finish(withWin: false)
+            finishGame()
         }
     }
 
-    private func nextQuestion() {
-        selectedIndex = nil
-        highlightCorrectIndex = nil
-        question = questionService.question(for: levelIndex)
-        startTimer()
+    func goToNextQuestion() {
+        guard !isGameFinished else { return }
+
+        selectedAnswer = nil
+        isCorrect = nil
+        hiddenIndices = []
+
+        if currentIndex < questions.count - 1 {
+            currentIndex += 1
+            saveProgress()
+        } else {
+            finishGame()
+        }
+    }
+
+    func finishGame() {
+        isFinished = true
         saveProgress()
     }
 
-    // MARK: - Завершение игры
-    private func finish(withWin: Bool) {
-        timerCancellable?.cancel()
-        let wonAmount: Int
-        if withWin {
-            wonAmount = PrizeLevel.all.last?.amount ?? 0
-        } else {
-            let safe = PrizeLevel.all.prefix(levelIndex)
-                .last(where: { $0.safe })?.amount ?? 0
-            wonAmount = safe
+    func timeExpired() {
+        finishGame()
+    }
+
+    // MARK: - Подсказки
+    func useFiftyFifty() {
+        guard !isGameFinished, hiddenIndices.isEmpty else { return }
+        let correct = currentQuestion.correctIndex
+        let wrong = Set(currentQuestion.answers.indices).subtracting([correct])
+        hiddenIndices = Set(Array(wrong.shuffled().prefix(2)))
+    }
+
+    func simulateCall() {
+        guard !isGameFinished else { return }
+        let correct = currentQuestion.correctIndex
+        let chance = Int.random(in: 1...100)
+        let picked = chance <= 70 ? correct : currentQuestion.answers.indices.filter { $0 != correct }.randomElement()!
+        print("📞 Друг думает, что это: \(currentQuestion.answers[picked])")
+    }
+
+    func simulateAudience() -> [Int: Int] {
+        guard !isGameFinished else { return [:] }
+        let correct = currentQuestion.correctIndex
+        var percentages: [Int: Int] = [:]
+
+        let correctPercent = Int.random(in: 40...60)
+        percentages[correct] = correctPercent
+
+        let remaining = 100 - correctPercent
+        let wrongAnswers = currentQuestion.answers.indices.filter { $0 != correct }
+        var distributed = wrongAnswers.map { _ in Int.random(in: 10...30) }
+
+        let sum = distributed.reduce(0, +)
+        for i in 0..<distributed.count {
+            distributed[i] = Int(Double(distributed[i]) / Double(sum) * Double(remaining))
         }
-        phase = .finished(wonAmount: wonAmount)
-        persistence.save(nil) // очищаем сохранёнку
+        for (i, idx) in wrongAnswers.enumerated() {
+            percentages[idx] = distributed[i]
+        }
+        return percentages
     }
 
-    // MARK: - Сохранение прогресса
+    func useSecondChance() {
+        guard !isGameFinished else { return }
+        secondChanceActive = true
+    }
+
+    // MARK: - Persistence
     private func saveProgress() {
-        let won = PrizeLevel.all.prefix(levelIndex).last?.amount ?? 0
-        let saved = SavedGame(levelIndex: levelIndex,
-                              wonAmount: won,
-                              question: question)
+        guard questions.indices.contains(currentIndex) else { return }
+        let saved = SavedGame(
+            levelIndex: currentIndex,
+            wonAmount: wonAmount,
+            question: currentQuestion
+        )
         persistence.save(saved)
-    }
-
-    // MARK: - Хелперы
-    func currentPrize() -> Int {
-        PrizeLevel.all.prefix(levelIndex).last?.amount ?? 0
-    }
-
-    func currentLevelIndex() -> Int {
-        levelIndex
     }
 }

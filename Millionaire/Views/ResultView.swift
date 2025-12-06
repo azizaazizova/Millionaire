@@ -2,10 +2,10 @@ import SwiftUI
 
 struct ResultView: View {
     let persistence: PersistenceService
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         ZStack {
-            // Фон через модификатор
             Color.clear.millionaireBackground()
 
             VStack(spacing: 24) {
@@ -13,11 +13,20 @@ struct ResultView: View {
                     .font(.title).bold()
                     .foregroundColor(.white)
 
-                Text("Ваш приз: $1000")
-                    .font(.title2)
-                    .foregroundColor(.yellow)
+                if let saved = persistence.load() {
+                    Text("Ваш приз: $\(saved.wonAmount)")
+                        .font(.title2)
+                        .foregroundColor(.yellow)
+                } else {
+                    Text("Ваш приз: $0")
+                        .font(.title2)
+                        .foregroundColor(.yellow)
+                }
 
-                NavigationLink(destination: HomeView(persistence: persistence)) {
+                Button {
+                    persistence.save(nil) // сброс сохранения
+                    dismiss()             // вернуться на HomeView
+                } label: {
                     BrandButton(title: "На главную")
                 }
             }
