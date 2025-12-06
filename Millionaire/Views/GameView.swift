@@ -1,106 +1,175 @@
 import SwiftUI
+import Combine
 
 struct GameView: View {
-    @ObservedObject var coordinator: AppCoordinator
     let persistence: PersistenceService
-    @StateObject private var vm: GameViewModel
+    @StateObject private var viewModel: GameViewModel
 
-    init(coordinator: AppCoordinator, persistence: PersistenceService) {
-        self.coordinator = coordinator
+    @State private var timeRemaining = 30
+    @State private var timerRunning = true
+    @State private var showProgress = false
+
+    @State private var hintUsed = false
+    @State private var callUsed = false
+    @State private var audienceUsed = false
+    @State private var secondChanceUsed = false
+
+    // Фон хранится как состояние и обновляется только при смене вопроса
+    @State private var backgroundStyle: AnyView = AnyView(Color.clear.millionaireBackground())
+
+    init(persistence: PersistenceService) {
         self.persistence = persistence
-        let restored = persistence.load()
-        _vm = StateObject(wrappedValue: GameViewModel(
-            questionService: QuestionService(),
-            persistence: persistence,
-            restored: restored
-        ))
+        _viewModel = StateObject(wrappedValue: GameViewModel(persistence: persistence))
     }
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 16) {
-                header
-                questionBlock
-                optionsBlock
-                LevelProgressView(currentIndex: vm.currentLevelIndex())
-                Spacer()
-            }
-            .padding()
-        }
-        .millionaireBackground()
-        .overlay(Color.black.opacity(0.3))
-        .onChange(of: vm.phase) { _, phase in
-            if case .finished(let amount) = phase {
-                coordinator.finishGame(wonAmount: amount)
-            }
-        }
-        .navigationTitle("Игра")
-        .navigationBarTitleDisplayMode(.inline)
-    }
+        NavigationStack {
+            ZStack {
+                backgroundStyle
+                    .ignoresSafeArea()
 
-    private var header: some View {
-        HStack {
-            Text("Приз: $\(vm.currentPrize())").font(.headline).foregroundColor(.yellow)
-            Spacer()
-            if case .asking(_, let time) = vm.phase {
-                Text("Время: \(time)s").font(.headline).foregroundColor(.red)
-            }
-        }
-    }
+                if !viewModel.isGameFinished {
+                    VStack(spacing: 16) {
+                        // Приз сразу под навигацией
+//                        Text("$\(viewModel.currentQuestion.prize)")
+//                            .font(.headline)
+//                            .foregroundColor(.yellow)
+//                            .frame(maxWidth: .infinity)
+//                            .padding(.top, 6) // небольшой отступ от навигации
 
-    private var questionBlock: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(vm.question.text).font(.title3).bold().foregroundColor(.white)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
+                        // Основной контент игры
+                        VStack(spacing: 12) {
+                            // Таймер
+                            TimerView(seconds: timeRemaining)
+                                .frame(width: 84, height: 64)
 
-    private var optionsBlock: some View {
-        VStack(spacing: 10) {
-            ForEach(vm.question.options.indices, id: \.self) { i in
-                Button {
-                    vm.selectAnswer(i)
-                } label: {
-                    HStack {
-                        Text(optionPrefix(i))
-                            .font(.headline).bold()
-                        Text(vm.question.options[i])
-                        Spacer()
+                            // Вопрос
+                            Text(viewModel.currentQuestion.question)
+                                .font(.title2).bold()
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+
+                            // Ответы
+                            ForEach(viewModel.currentQuestion.answers.indices, id: \.self) { index in
+                                if !viewModel.hiddenIndices.contains(index) {
+                                    Button(action: {
+                                        viewModel.selectAnswer(index)
+                                        timerRunning = false
+                                    }) {
+                                        BrandButton(
+                                            title: "\(letter(for: index)): \(viewModel.currentQuestion.answers[index])",
+                                            overrideColor: answerColor(for: index)
+                                        )
+                                    }
+                                }
+                            }
+
+                            // Подсказки
+                            HStack(spacing: 12) {
+                                OvalHintButton(title: "50:50", disabled: hintUsed) {
+                                    viewModel.useFiftyFifty()
+                                    hintUsed = true
+                                }
+
+                                OvalHintButton(title: "📞", disabled: callUsed) {
+                                    callUsed = true
+                                    viewModel.simulateCall()
+                                }
+
+                                OvalHintButton(title: "👥", disabled: audienceUsed) {
+                                    audienceUsed = true
+                                    _ = viewModel.simulateAudience()
+                                }
+
+                                OvalHintButton(title: "❤️", disabled: secondChanceUsed) {
+                                    secondChanceUsed = true
+                                    viewModel.useSecondChance()
+                                }
+                            }
+                            .padding(.top, 12)
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(optionBackground(i))
-                    .foregroundColor(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
+                    ResultView(persistence: persistence)
                 }
-                .disabled(!isOptionEnabled)
+            }
+
+            // Навигация: номер вопроса (белым цветом)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    VStack(spacing: 2) {
+                        Text("ВОПРОС #\(viewModel.currentIndex + 1)")
+                            .font(.headline)
+                            .foregroundColor(.white)
+
+                        Text("$\(viewModel.currentQuestion.prize)")
+                            .font(.headline.weight(.semibold))
+                            .foregroundColor(.white)
+                    }
+                }
+
+                // Кнопка уровней справа
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if !viewModel.isGameFinished {
+                        Button {
+                            showProgress = true
+                            timerRunning = false
+                        } label: {
+                            Image(systemName: "chart.bar.xaxis")
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                startTimer()
+            }
+            .onChange(of: viewModel.currentIndex) {
+                timeRemaining = 30
+                timerRunning = true
+                startTimer()
+
+                // Меняем фон только при переходе на новый вопрос
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    backgroundStyle = AnyView(Color.clear.millionaireBackground())
+                }
+            }
+            .sheet(isPresented: $showProgress, onDismiss: {
+                timerRunning = true
+                startTimer()
+            }) {
+                LevelProgressView(currentLevel: viewModel.currentIndex)
             }
         }
     }
 
-    private var isOptionEnabled: Bool {
-        if case .asking = vm.phase { return true }
-        return false
-    }
-
-    private func optionPrefix(_ i: Int) -> String {
-        ["A", "B", "C", "D"][i]
-    }
-
-    private func optionBackground(_ i: Int) -> Color {
-        if let selected = vm.selectedIndex, selected == i {
-            if case .answered(let correct, _) = vm.phase {
-                return correct ? .green : .red
+    private func startTimer() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            guard timerRunning else {
+                timer.invalidate()
+                return
             }
-            return .blue
-        }
-        if let highlight = vm.highlightCorrectIndex, highlight == i {
-            return .green
-        }
-        return .indigo
-    }
-}
 
-#Preview {
-    GameView(coordinator: AppCoordinator(), persistence: PersistenceService())
+            if timeRemaining > 0 {
+                timeRemaining -= 1
+            } else {
+                timer.invalidate()
+                viewModel.timeExpired()
+            }
+        }
+    }
+
+    private func answerColor(for index: Int) -> Color? {
+        guard let selected = viewModel.selectedAnswer else { return nil }
+        if selected == index {
+            return viewModel.isCorrect == true ? .green : .red
+        }
+        return nil
+    }
+
+    private func letter(for index: Int) -> String {
+        ["A", "B", "C", "D"][index]
+    }
 }
