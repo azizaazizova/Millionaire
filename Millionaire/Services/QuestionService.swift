@@ -1,17 +1,17 @@
 import Foundation
 
-final class QuestionService {
-    private var seedQuestions: [Question] = [
-        Question(text: "В каком году изобрели первую посудомоечную машину?",
-                 options: ["1850", "1886", "1901", "1923"],
-                 correctIndex: 1),
-        Question(text: "В каком году появился первый дезодорант?",
-                 options: ["1888", "1902", "1912", "1920"],
-                 correctIndex: 0),
-    ]
-
-    func question(for levelIndex: Int) -> Question {
-        let idx = levelIndex % seedQuestions.count
-        return seedQuestions[idx]
+struct QuestionService {
+    static func loadQuestions() -> [Question] {
+        guard let url = Bundle.main.url(forResource: "questions", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else {
+            print("Не удалось найти questions.json")
+            return []
+        }
+        do {
+            return try JSONDecoder().decode([Question].self, from: data)
+        } catch {
+            print("Ошибка декодирования: \(error)")
+            return []
+        }
     }
 }

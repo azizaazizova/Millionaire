@@ -20,7 +20,8 @@ struct HomeView: View {
                     .frame(width: 320, height: 280)
 
                 Text("Кто хочет стать миллионером?")
-                    .font(.title).bold()
+                    //.font(.title).bold()
+                    .font(.custom("Poppins-Bold", size: 30))
                     .foregroundColor(.white)
 
                 if vm.canContinue {
@@ -33,16 +34,19 @@ struct HomeView: View {
                     }
                 }
 
+                // Новая игра — очищаем сохранение
                 NavigationLink(destination: GameView(persistence: persistence)) {
                     BrandButton(title: "Новая игра")
                 }
-
+                .simultaneousGesture(TapGesture().onEnded {
+                    persistence.save(nil)   // сброс прогресса
+                    vm.refreshFromPersistence()
+                })
 
                 Spacer(minLength: 20)
             }
             .padding(.horizontal, 24)
 
-            // 🔘 Кнопка "?"
             NavigationLink(destination: HelpView()) {
                 Image(systemName: "questionmark.circle.fill")
                     .resizable()
@@ -55,9 +59,13 @@ struct HomeView: View {
             .padding(.trailing, 16)
         }
         .millionaireBackground()
+        .onAppear {
+            vm.refreshFromPersistence()
+        }
     }
 }
 
 #Preview {
     HomeView(persistence: PersistenceService())
 }
+
