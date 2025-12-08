@@ -1,9 +1,90 @@
 import SwiftUI
 
+// MARK: - Градиенты приложения
+
+enum AppGradient {
+    case yellowOrange
+    case greenMint
+    case redGold
+    case darkBlue
+
+    var linear: LinearGradient {
+        switch self {
+        case .yellowOrange:
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color(hex: "#E1CF30"), location: 0.0),
+                    .init(color: Color(hex: "#E19A30"), location: 0.3333),
+                    .init(color: Color(hex: "#E19A30"), location: 0.7969),
+                    .init(color: Color(hex: "#E1CF30"), location: 1.0)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+        case .greenMint:
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color(hex: "#3B8E14"), location: 0.0),
+                    .init(color: Color(hex: "#266608"), location: 0.4427),
+                    .init(color: Color(hex: "#266608"), location: 0.7969),
+                    .init(color: Color(hex: "#3D881A"), location: 1.0)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+        case .redGold:
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color(hex: "#B4411C"), location: 0.0),
+                    .init(color: Color(hex: "#832102"), location: 0.3333),
+                    .init(color: Color(hex: "#832102"), location: 0.7969),
+                    .init(color: Color(hex: "#B43E19"), location: 1.0)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+        case .darkBlue:
+            return LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color(hex: "#025D83"), location: 0.0),
+                    .init(color: Color(hex: "#022B54"), location: 0.3333),
+                    .init(color: Color(hex: "#020631"), location: 0.7969),
+                    .init(color: Color(hex: "#083C66"), location: 1.0)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
+    }
+}
+
+
+// MARK: - Форма стрелочной кнопки
+struct ArrowButtonShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let h = rect.height
+        let cut = h * 0.35
+
+        path.move(to: CGPoint(x: cut, y: 0))
+        path.addLine(to: CGPoint(x: rect.width - cut, y: 0))
+        path.addLine(to: CGPoint(x: rect.width, y: h / 2))
+        path.addLine(to: CGPoint(x: rect.width - cut, y: h))
+        path.addLine(to: CGPoint(x: cut, y: h))
+        path.addLine(to: CGPoint(x: 0, y: h / 2))
+        path.closeSubpath()
+
+        return path
+    }
+}
+
+// MARK: - Стрелочная кнопка
 struct BrandButton: View {
     let title: String
-    var filled: Bool = true
-    var overrideColor: Color? = nil  //Новый параметр для визуальной индикации
+    var gradient: LinearGradient? = nil
 
     var body: some View {
         Text(title)
@@ -12,113 +93,41 @@ struct BrandButton: View {
             .frame(maxWidth: .infinity, maxHeight: 56)
             .background(
                 ArrowButtonShape()
-                    .fill(overrideColor != nil ? overrideGradient : gradient)
+                    .fill(gradient ?? AppGradient.yellowOrange.linear)
             )
             .overlay(
                 ArrowButtonShape()
                     .stroke(Color.white, lineWidth: 2)
             )
-            .contentShape(Rectangle())
             .padding(.horizontal, 24)
     }
-
-    private var gradient: LinearGradient {
-        if filled {
-            return LinearGradient(
-                gradient: Gradient(colors: [Color(red: 1.0, green: 0.8, blue: 0.2), Color.orange]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        } else {
-            return LinearGradient(
-                gradient: Gradient(colors: [Color(hex: "#1C2A4A"), Color(hex: "#2F3F6B")]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
-    }
-
-    private var overrideGradient: LinearGradient {
-        guard let color = overrideColor else { return gradient }
-        return LinearGradient(
-            gradient: Gradient(colors: [color.opacity(0.9), color]),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
 }
 
-
-// Кастомная форма кнопки
-struct ArrowButtonShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let tipWidth: CGFloat = 16
-        let radius: CGFloat = 4
-
-        path.move(to: CGPoint(x: tipWidth + radius, y: 0))
-        path.addArc(center: CGPoint(x: tipWidth + radius, y: radius),
-                    radius: radius,
-                    startAngle: .degrees(-90),
-                    endAngle: .degrees(180),
-                    clockwise: true)
-
-        path.addLine(to: CGPoint(x: 0, y: rect.midY))
-        path.addLine(to: CGPoint(x: tipWidth, y: rect.height - radius))
-        path.addArc(center: CGPoint(x: tipWidth + radius, y: rect.height - radius),
-                    radius: radius,
-                    startAngle: .degrees(180),
-                    endAngle: .degrees(90),
-                    clockwise: true)
-
-        path.addLine(to: CGPoint(x: rect.width - tipWidth - radius, y: rect.height))
-        path.addArc(center: CGPoint(x: rect.width - tipWidth - radius, y: rect.height - radius),
-                    radius: radius,
-                    startAngle: .degrees(90),
-                    endAngle: .degrees(0),
-                    clockwise: true)
-
-        path.addLine(to: CGPoint(x: rect.width, y: rect.midY))
-        path.addLine(to: CGPoint(x: rect.width - tipWidth, y: radius))
-        path.addArc(center: CGPoint(x: rect.width - tipWidth - radius, y: radius),
-                    radius: radius,
-                    startAngle: .degrees(0),
-                    endAngle: .degrees(-90),
-                    clockwise: true)
-
-        path.closeSubpath()
-        return path
-    }
-}
-
-
-// овальная кнопка OvalHintButton
+// MARK: - Овальная кнопка подсказки
 struct OvalHintButton: View {
     let title: String
-    var icon: String? = nil
+    var systemImage: String? = nil
     var disabled: Bool = false
+    var gradient: LinearGradient = AppGradient.darkBlue.linear
     var action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack {
-                if let icon = icon {
-                    Text(icon)
-                        .font(.system(size: 20))
+            ZStack {
+                if let systemImage = systemImage {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 24))
+                        .foregroundColor(.white)
+                } else {
+                    Text(title)
+                        .font(.headline)
                         .foregroundColor(.white)
                 }
-                Text(title)
-                    .font(.headline)
-                    .foregroundColor(.white)
             }
             .frame(width: 84, height: 64)
             .background(
                 RoundedRectangle(cornerRadius: 32)
-                    .fill(LinearGradient(
-                        gradient: Gradient(colors: [Color(hex: "#1C2A4A"), Color(hex: "#2F3F6B")]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ))
+                    .fill(gradient)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 32)
@@ -130,3 +139,35 @@ struct OvalHintButton: View {
     }
 }
 
+// MARK: - Кнопка ответа
+struct AnswerButtonView: View {
+    let index: Int
+    let text: String
+    let selected: Int?
+    let isCorrect: Bool?
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            BrandButton(
+                title: "\(letter(for: index)): \(text)",
+                gradient: buttonGradient
+            )
+        }
+    }
+
+    private var buttonGradient: LinearGradient {
+        if let selected = selected, selected == index {
+            if isCorrect == true {
+                return AppGradient.greenMint.linear   // правильный → зелёный
+            } else if isCorrect == false {
+                return AppGradient.redGold.linear     // неправильный → красно‑золотой
+            }
+        }
+        return AppGradient.darkBlue.linear           // по умолчанию → тёмно‑синий
+    }
+
+    private func letter(for index: Int) -> String {
+        ["A", "B", "C", "D"][index]
+    }
+}

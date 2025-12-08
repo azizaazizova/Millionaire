@@ -13,6 +13,12 @@ class GameViewModel: ObservableObject {
     @Published var secondChanceActive: Bool = false
     @Published var isFinished: Bool = false
 
+    private let guaranteedLevels: [Int: Int] = [
+        4: 1000,
+        9: 32000,
+        14: 1000000
+    ]
+
     init(persistence: PersistenceService) {
         self.persistence = persistence
         self.questions = QuestionService.loadQuestions()
@@ -30,13 +36,8 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // Безопасный доступ к текущему вопросу
     var currentQuestion: Question {
-        if questions.indices.contains(currentIndex) {
-            return questions[currentIndex]
-        } else {
-            return questions.first!
-        }
+        questions.indices.contains(currentIndex) ? questions[currentIndex] : questions.first!
     }
 
     var isGameFinished: Bool {
@@ -57,15 +58,19 @@ class GameViewModel: ObservableObject {
             }
         } else if secondChanceActive {
             secondChanceActive = false
-            isCorrect = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.selectedAnswer = nil
+                self.isCorrect = nil
+            }
         } else {
-            finishGame()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.finishWithGuaranteedPrize()
+            }
         }
     }
 
     func goToNextQuestion() {
         guard !isGameFinished else { return }
-
         selectedAnswer = nil
         isCorrect = nil
         hiddenIndices = []
@@ -74,21 +79,42 @@ class GameViewModel: ObservableObject {
             currentIndex += 1
             saveProgress()
         } else {
+            wonAmount = questions.last?.prize ?? 0
             finishGame()
         }
     }
 
     func finishGame() {
+        if wonAmount == 0 {
+            let fallback = guaranteedLevels
+                .filter { $0.key <= currentIndex }
+                .sorted { $0.key > $1.key }
+                .first?.value ?? 0
+            wonAmount = fallback
+        }
         isFinished = true
         saveProgress()
     }
 
     func timeExpired() {
+            finishGame()
+    }
+
+    func cashOut() {
+        wonAmount = currentQuestion.prize
+        finishGame()
+    }
+
+    private func finishWithGuaranteedPrize() {
+        let fallback = guaranteedLevels
+            .filter { $0.key <= currentIndex }
+            .sorted { $0.key > $1.key }
+            .first?.value ?? 0
+        wonAmount = fallback
         finishGame()
     }
 
     // MARK: - Подсказки
-    /// 50:50 — возвращает скрытые индексы для UI
     func useFiftyFifty() -> [Int] {
         guard !isGameFinished, hiddenIndices.isEmpty else { return [] }
         let correct = currentQuestion.correctIndex
@@ -97,7 +123,6 @@ class GameViewModel: ObservableObject {
         return Array(hiddenIndices)
     }
 
-    /// Звонок другу — возвращает текстовый совет
     func simulateCall() -> String {
         guard !isGameFinished else { return "Игра завершена" }
         let correct = currentQuestion.correctIndex
@@ -106,7 +131,6 @@ class GameViewModel: ObservableObject {
         return "Друг думает, что это: \(currentQuestion.answers[picked])"
     }
 
-    /// Помощь зала — возвращает массив для диаграммы
     func simulateAudience() -> [(answer: String, percent: Int)] {
         guard !isGameFinished else { return [] }
         let correct = currentQuestion.correctIndex
@@ -130,14 +154,12 @@ class GameViewModel: ObservableObject {
         return percentages.map { (answer: currentQuestion.answers[$0.key], percent: $0.value) }
     }
 
-    /// Вторая попытка — возвращает сообщение для UI
     func useSecondChance() -> String {
         guard !isGameFinished else { return "Игра завершена" }
         secondChanceActive = true
         return "Вторая попытка активирована!"
     }
 
-    // MARK: - Persistence
     private func saveProgress() {
         guard questions.indices.contains(currentIndex) else { return }
         let saved = SavedGame(
@@ -146,5 +168,13 @@ class GameViewModel: ObservableObject {
             question: currentQuestion
         )
         persistence.save(saved)
+    }
+
+    var didWin: Bool {
+        isFinished && currentIndex == questions.count - 1 && wonAmount == questions.last?.prize
+    }
+
+    var cashedOut: Bool {
+        isFinished && selectedAnswer == nil && isCorrect == nil
     }
 }
