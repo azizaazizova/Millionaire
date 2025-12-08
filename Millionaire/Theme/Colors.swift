@@ -37,9 +37,13 @@ extension View {
             .background(
                 GeometryReader { geo in
                     ZStack {
-                        // Градиентный фон
+                        // Градиентный фон с голубым акцентом
                         LinearGradient(
-                            colors: [Color(hex: "#1C2A4A"), Color(hex: "#2F3F6B")],
+                            gradient: Gradient(stops: [
+                                .init(color: Color(hex: "#3A4F8B"), location: 0.0),   // верхний синий
+                                .init(color: Color(hex: "#25B1FF"), location: 0.5),   // голубой акцент в центре
+                                .init(color: Color(hex: "#2F3F6B"), location: 1.0)    // нижний синий
+                            ]),
                             startPoint: .top,
                             endPoint: .bottom
                         )
@@ -57,7 +61,7 @@ extension View {
                                 )
                         }
                     }
-                    .allowsHitTesting(false) //чтобы фон не блокировал клики
+                    .allowsHitTesting(false)
                 }
             )
     }

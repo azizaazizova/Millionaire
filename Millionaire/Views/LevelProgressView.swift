@@ -9,38 +9,70 @@ struct LevelProgressView: View {
     ]
 
     let currentLevel: Int
+    let onCashOut: () -> Void
+
+    let guaranteedIndices: Set<Int> = [4, 9, 14]
 
     var body: some View {
         ZStack {
-            Color.clear.millionaireBackground()
+            Color.clear.millionaireBackground().ignoresSafeArea()
 
-            VStack(spacing: 12) {
-                Text("Прогресс игры")
-                    .font(.title2).bold()
-                    .foregroundColor(.yellow)
-
+            VStack(spacing: 0) {
                 ForEach(levels.indices.reversed(), id: \.self) { index in
                     HStack {
+                        Text("Вопрос \(index + 1)")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                        Spacer()
                         Text(levels[index])
-                            .font(.headline)
-                            .foregroundColor(index == currentLevel ? .black : .white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(index == currentLevel ? Color.yellow : Color.clear)
-                                    .animation(.easeInOut(duration: 0.3), value: currentLevel)
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(index == currentLevel ? Color.orange : Color.clear, lineWidth: 2)
-                            )
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(.white)
                     }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity, maxHeight: 56)
+                    .background(
+                        ArrowButtonShape()
+                            .fill(buttonGradient(for: index))
+                    )
+                    .overlay(
+                        ArrowButtonShape()
+                            .stroke(Color.white, lineWidth: 2)
+                    )
+                    .padding(.horizontal, 24)
                 }
 
                 Spacer()
+
+                Button(action: onCashOut) {
+                    Text("Забрать деньги")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(Color.green.opacity(0.8))
+                        )
+                }
+                .padding(.bottom, 20)
             }
-            .padding()
+            .padding(.horizontal)
+        }
+        .navigationBarBackButtonHidden(true)
+    }
+
+    private func buttonGradient(for index: Int) -> LinearGradient {
+        if index == currentLevel {
+            return AppGradient.yellowOrange.linear
+        } else if guaranteedIndices.contains(index) {
+            return AppGradient.darkBlue.linear
+        } else {
+            return LinearGradient(
+                colors: [Color.gray.opacity(0.3), Color.gray.opacity(0.5)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         }
     }
 }

@@ -46,310 +46,303 @@
     "question": "Какой тип данных используется для хранения текста в Swift?",
     "answers": ["Text", "String", "Char", "Label"],
     "correctIndex": 1,
-    "prize": 4000
+    "prize": 3000
   },
   {
     "id": 8,
     "question": "Какой тип используется для булевых значений?",
     "answers": ["Boolean", "Bool", "Int", "Switch"],
     "correctIndex": 1,
-    "prize": 8000
+    "prize": 5000
   },
   {
     "id": 9,
     "question": "Какой оператор используется для объединения строк?",
     "answers": ["+", "&", "||", "concat()"],
     "correctIndex": 0,
-    "prize": 16000
+    "prize": 7500
   },
   {
     "id": 10,
     "question": "Какой модификатор делает свойство доступным только внутри файла?",
     "answers": ["private", "fileprivate", "internal", "protected"],
     "correctIndex": 1,
-    "prize": 32000
+    "prize": 10000
   },
-
   {
     "id": 11,
     "question": "Какой фреймворк заменяет UIKit в новых проектах?",
     "answers": ["SwiftUI", "Jetpack Compose", "React Native", "Flutter"],
     "correctIndex": 0,
-    "prize": 64000
+    "prize": 15000
   },
   {
     "id": 12,
     "question": "Какой протокол нужен для работы с таблицами в UIKit?",
     "answers": ["UITableViewDelegate", "UITableViewDataSource", "UICollectionViewDelegate", "UITableViewController"],
     "correctIndex": 1,
-    "prize": 125000
+    "prize": 20000
   },
   {
     "id": 13,
     "question": "Какой класс отвечает за навигацию между экранами?",
     "answers": ["UINavigationController", "UIViewController", "UIWindow", "UITabBarController"],
     "correctIndex": 0,
-    "prize": 250000
+    "prize": 30000
   },
   {
     "id": 14,
     "question": "Какой объект хранит данные приложения между запусками?",
     "answers": ["UserDefaults", "CoreData", "FileManager", "Keychain"],
     "correctIndex": 0,
-    "prize": 500000
+    "prize": 40000
   },
   {
     "id": 15,
     "question": "Какой паттерн используется для передачи данных между экранами?",
     "answers": ["Delegate", "Observer", "Singleton", "Factory"],
     "correctIndex": 0,
-    "prize": 1000000
+    "prize": 50000
   },
-
   {
     "id": 16,
     "question": "Какой инструмент Apple для тестирования UI?",
     "answers": ["XCTest", "UIAutomator", "Espresso", "Detox"],
     "correctIndex": 0,
-    "prize": 2000
+    "prize": 75000
   },
   {
     "id": 17,
     "question": "Какой модификатор в SwiftUI делает элемент кликабельным?",
     "answers": [".onTapGesture", ".clickable", ".gesture", ".touch"],
     "correctIndex": 0,
-    "prize": 4000
+    "prize": 100000
   },
   {
     "id": 18,
     "question": "Какой тип используется для асинхронных операций в Swift?",
     "answers": ["Promise", "Future", "async/await", "Thread"],
     "correctIndex": 2,
-    "prize": 8000
+    "prize": 125000
   },
   {
     "id": 19,
     "question": "Какой фреймворк используется для работы с Core Data?",
     "answers": ["CoreData", "Realm", "SQLite", "Firebase"],
     "correctIndex": 0,
-    "prize": 16000
+    "prize": 150000
   },
   {
     "id": 20,
     "question": "Какой объект отвечает за push-уведомления?",
     "answers": ["UNUserNotificationCenter", "NotificationManager", "PushService", "AlertController"],
     "correctIndex": 0,
-    "prize": 32000
+    "prize": 200000
   },
-
   {
     "id": 21,
     "question": "Какой протокол нужен для коллекций в UIKit?",
     "answers": ["UICollectionViewDelegate", "UICollectionViewDataSource", "UICollectionViewFlowLayout", "UICollectionViewController"],
     "correctIndex": 1,
-    "prize": 64000
+    "prize": 250000
   },
   {
     "id": 22,
     "question": "Какой тип используется для работы с датами?",
     "answers": ["Date", "NSDate", "Calendar", "Time"],
     "correctIndex": 0,
-    "prize": 125000
+    "prize": 300000
   },
   {
     "id": 23,
     "question": "Какой класс отвечает за анимации в UIKit?",
     "answers": ["UIView.animate", "CALayer", "AnimationController", "Animator"],
     "correctIndex": 0,
-    "prize": 250000
+    "prize": 350000
   },
   {
     "id": 24,
     "question": "Какой модификатор в SwiftUI добавляет фон?",
     "answers": [".background", ".overlay", ".fill", ".behind"],
     "correctIndex": 0,
-    "prize": 500000
+    "prize": 400000
   },
   {
     "id": 25,
     "question": "Какой объект отвечает за сетевые запросы?",
     "answers": ["URLSession", "HttpClient", "NetworkManager", "Alamofire"],
     "correctIndex": 0,
-    "prize": 1000000
+    "prize": 450000
   },
-    {
-      "id": 26,
-      "question": "Какой формат чаще всего используется для сериализации данных в iOS?",
-      "answers": ["XML", "JSON", "YAML", "CSV"],
-      "correctIndex": 1,
-      "prize": 2000
-    },
-    {
-      "id": 27,
-      "question": "Какой фреймворк используется для работы с картами?",
-      "answers": ["MapKit", "GoogleMaps", "OpenStreetMap", "CoreLocation"],
-      "correctIndex": 0,
-      "prize": 4000
-    },
-    {
-      "id": 28,
-      "question": "Какой объект отвечает за хранение изображений?",
-      "answers": ["UIImage", "NSImage", "Picture", "Photo"],
-      "correctIndex": 0,
-      "prize": 8000
-    },
-    {
-      "id": 29,
-      "question": "Какой модификатор в SwiftUI добавляет скруглённые углы?",
-      "answers": [".cornerRadius", ".clipShape", ".rounded", ".radius"],
-      "correctIndex": 0,
-      "prize": 16000
-    },
-    {
-      "id": 30,
-      "question": "Какой объект отвечает за работу с камерой?",
-      "answers": ["AVCaptureSession", "CameraKit", "UIImagePickerController", "PhotoManager"],
-      "correctIndex": 0,
-      "prize": 32000
-    },
-    {
+  {
+    "id": 26,
+    "question": "Какой формат чаще всего используется для сериализации данных в iOS?",
+    "answers": ["XML", "JSON", "YAML", "CSV"],
+    "correctIndex": 1,
+    "prize": 500000
+  },
+  {
+    "id": 27,
+    "question": "Какой фреймворк используется для работы с картами?",
+    "answers": ["MapKit", "GoogleMaps", "OpenStreetMap", "CoreLocation"],
+    "correctIndex": 0,
+    "prize": 550000
+  },
+  {
+    "id": 28,
+    "question": "Какой объект отвечает за хранение изображений?",
+    "answers": ["UIImage", "NSImage", "Picture", "Photo"],
+    "correctIndex": 0,
+    "prize": 600000
+  },
+  {
+    "id": 29,
+    "question": "Какой модификатор в SwiftUI добавляет скруглённые углы?",
+    "answers": [".cornerRadius", ".clipShape", ".rounded", ".radius"],
+    "correctIndex": 0,
+    "prize": 650000
+  },
+  {
+    "id": 30,
+    "question": "Какой объект отвечает за работу с камерой?",
+    "answers": ["AVCaptureSession", "CameraKit", "UIImagePickerController", "PhotoManager"],
+    "correctIndex": 0,
+    "prize": 700000
+  },
+  {
       "id": 31,
       "question": "Какой паттерн используется в SwiftUI для управления состоянием?",
       "answers": ["MVC", "MVVM", "MVP", "VIPER"],
       "correctIndex": 1,
-      "prize": 64000
-    },
-    {
+      "prize": 750000
+  },
+  {
       "id": 32,
       "question": "Какой property wrapper хранит состояние внутри View?",
-      "answers": ["@State", "@Binding", "@ObservedObject", "@EnvironmentObject"],
+      "answers": ["@State","@Binding","@ObservedObject","@EnvironmentObject"],
       "correctIndex": 0,
-      "prize": 125000
-    },
-    {
+      "prize": 800000
+  },
+  {
       "id": 33,
       "question": "Какой property wrapper используется для передачи данных вниз по иерархии?",
-      "answers": ["@State", "@Binding", "@ObservedObject", "@EnvironmentObject"],
+      "answers": ["@State","@Binding","@ObservedObject","@EnvironmentObject"],
       "correctIndex": 3,
-      "prize": 250000
-    },
-    {
-      "id": 34,
+      "prize": 825000
+  },
+  { "id": 34,
       "question": "Какой property wrapper используется для связи с ObservableObject?",
-      "answers": ["@State", "@Binding", "@ObservedObject", "@EnvironmentObject"],
+      "answers": ["@State","@Binding","@ObservedObject","@EnvironmentObject"],
       "correctIndex": 2,
-      "prize": 500000
-    },
-    {
-      "id": 35,
+       "prize": 850000 },
+  { "id": 35,
       "question": "Какой property wrapper используется для передачи данных между экранами?",
-      "answers": ["@State", "@Binding", "@ObservedObject", "@EnvironmentObject"],
+      "answers": ["@State","@Binding","@ObservedObject","@EnvironmentObject"],
       "correctIndex": 1,
-      "prize": 1000000
-    },
-    {
-      "id": 36,
-      "question": "Какой объект отвечает за анимации в SwiftUI?",
-      "answers": ["UIView.animate", "withAnimation", "AnimationController", "Animator"],
-      "correctIndex": 1,
-      "prize": 2000
-    },
-    {
-      "id": 37,
-      "question": "Какой фреймворк используется для работы с AR?",
-      "answers": ["ARKit", "SceneKit", "RealityKit", "CoreMotion"],
-      "correctIndex": 0,
-      "prize": 4000
-    },
-    {
-      "id": 38,
-      "question": "Какой фреймворк используется для работы с машинным обучением?",
-      "answers": ["TensorFlow", "CoreML", "PyTorch", "MLKit"],
-      "correctIndex": 1,
-      "prize": 8000
-    },
-    {
-      "id": 39,
-      "question": "Какой объект отвечает за работу с аудио?",
-      "answers": ["AVAudioPlayer", "AudioKit", "SoundManager", "MusicPlayer"],
-      "correctIndex": 0,
-      "prize": 16000
-    },
-    {
-      "id": 40,
-      "question": "Какой объект отвечает за работу с видео?",
-      "answers": ["AVPlayer", "VideoKit", "MoviePlayer", "MediaController"],
-      "correctIndex": 0,
-      "prize": 32000
-    },
-    {
-      "id": 41,
-      "question": "Какой фреймворк используется для работы с Bluetooth?",
-      "answers": ["CoreBluetooth", "BluetoothKit", "BTFramework", "BlueManager"],
-      "correctIndex": 0,
-      "prize": 64000
-    },
-    {
-      "id": 42,
-      "question": "Какой объект отвечает за работу с датчиками?",
-      "answers": ["CoreMotion", "SensorKit", "MotionManager", "Accelerometer"],
-      "correctIndex": 0,
-      "prize": 125000
-    },
-    {
-      "id": 43,
-      "question": "Какой объект отвечает за работу с геолокацией?",
-      "answers": ["CLLocationManager", "GeoKit", "LocationService", "MapManager"],
-      "correctIndex": 0,
-      "prize": 250000
-    },
-    {
-      "id": 44,
-      "question": "Какой объект отвечает за работу с файловой системой?",
-      "answers": ["FileManager", "StorageKit", "DiskManager", "FSController"],
-      "correctIndex": 0,
-      "prize": 500000
-    },
-    {
-      "id": 45,
-      "question": "Какой объект отвечает за работу с Keychain?",
-      "answers": ["Keychain Services", "SecureStore", "AuthKit", "CryptoManager"],
-      "correctIndex": 0,
-      "prize": 1000000
-    },
-    {
-      "id": 46,
-      "question": "Какой объект отвечает за работу с App Store?",
-      "answers": ["StoreKit", "AppStoreManager", "PurchaseKit", "MarketKit"],
-      "correctIndex": 0,
-      "prize": 2000
-    },
-    {
-      "id": 47,
-      "question": "Какой объект отвечает за работу с In-App Purchases?",
-      "answers": ["SKPaymentQueue", "PurchaseManager", "IAPKit", "StoreKit"],
-      "correctIndex": 0,
-      "prize": 4000
-    },
-    {
-      "id": 48,
-      "question": "Какой объект отвечает за работу с Haptic Feedback?",
-      "answers": ["UIImpactFeedbackGenerator", "HapticKit", "FeedbackManager", "TouchKit"],
-      "correctIndex": 0,
-      "prize": 8000
-    },
-    {
-      "id": 49,
-      "question": "Какой объект отвечает за работу с Face ID?",
-      "answers": ["LAContext", "FaceKit", "AuthManager", "BiometricKit"],
-      "correctIndex": 0,
-      "prize": 16000
-    },
-    {
-      "id": 50,
-      "question": "Какой объект отвечает за работу с Siri?",
-      "answers": ["SiriKit", "VoiceKit", "SpeechKit", "AssistantKit"],
-      "correctIndex": 0,
-      "prize": 32000
-    }
+      "prize": 875000 },
+  {
+    "id": 36,
+    "question": "Какой объект отвечает за анимации в SwiftUI?",
+    "answers": ["UIView.animate", "withAnimation", "AnimationController", "Animator"],
+    "correctIndex": 1,
+    "prize": 900000
+  },
+  {
+    "id": 37,
+    "question": "Какой фреймворк используется для работы с AR?",
+    "answers": ["ARKit", "SceneKit", "RealityKit", "CoreMotion"],
+    "correctIndex": 0,
+    "prize": 925000
+  },
+  {
+    "id": 38,
+    "question": "Какой фреймворк используется для работы с машинным обучением?",
+    "answers": ["TensorFlow", "CoreML", "PyTorch", "MLKit"],
+    "correctIndex": 1,
+    "prize": 950000
+  },
+  {
+    "id": 39,
+    "question": "Какой объект отвечает за работу с аудио?",
+    "answers": ["AVAudioPlayer", "AudioKit", "SoundManager", "MusicPlayer"],
+    "correctIndex": 0,
+    "prize": 975000
+  },
+  {
+    "id": 40,
+    "question": "Какой объект отвечает за работу с видео?",
+    "answers": ["AVPlayer", "VideoKit", "MoviePlayer", "MediaController"],
+    "correctIndex": 0,
+    "prize": 1000000
+  },
+  {
+    "id": 41,
+    "question": "Какой фреймворк используется для работы с Bluetooth?",
+    "answers": ["CoreBluetooth", "BluetoothKit", "BTFramework", "BlueManager"],
+    "correctIndex": 0,
+    "prize": 1050000
+  },
+  {
+    "id": 42,
+    "question": "Какой объект отвечает за работу с датчиками?",
+    "answers": ["CoreMotion", "SensorKit", "MotionManager", "Accelerometer"],
+    "correctIndex": 0,
+    "prize": 1100000
+  },
+  {
+    "id": 43,
+    "question": "Какой объект отвечает за работу с геолокацией?",
+    "answers": ["CLLocationManager", "GeoKit", "LocationService", "MapManager"],
+    "correctIndex": 0,
+    "prize": 1150000
+  },
+  {
+    "id": 44,
+    "question": "Какой объект отвечает за работу с файловой системой?",
+    "answers": ["FileManager", "StorageKit", "DiskManager", "FSController"],
+    "correctIndex": 0,
+    "prize": 1200000
+  },
+  {
+    "id": 45,
+    "question": "Какой объект отвечает за работу с Keychain?",
+    "answers": ["Keychain Services", "SecureStore", "AuthKit", "CryptoManager"],
+    "correctIndex": 0,
+    "prize": 1250000
+  },
+  {
+    "id": 46,
+    "question": "Какой объект отвечает за работу с App Store?",
+    "answers": ["StoreKit", "AppStoreManager", "PurchaseKit", "MarketKit"],
+    "correctIndex": 0,
+    "prize": 1300000
+  },
+  {
+    "id": 47,
+    "question": "Какой объект отвечает за работу с In-App Purchases?",
+    "answers": ["SKPaymentQueue", "PurchaseManager", "IAPKit", "StoreKit"],
+    "correctIndex": 0,
+    "prize": 1350000
+  },
+  {
+    "id": 48,
+    "question": "Какой объект отвечает за работу с Haptic Feedback?",
+    "answers": ["UIImpactFeedbackGenerator", "HapticKit", "FeedbackManager", "TouchKit"],
+    "correctIndex": 0,
+    "prize": 1400000
+  },
+  {
+    "id": 49,
+    "question": "Какой объект отвечает за работу с Face ID?",
+    "answers": ["LAContext", "FaceKit", "AuthManager", "BiometricKit"],
+    "correctIndex": 0,
+    "prize": 1450000
+  },
+  {
+    "id": 50,
+    "question": "Какой объект отвечает за работу с Siri?",
+    "answers": ["SiriKit", "VoiceKit", "SpeechKit", "AssistantKit"],
+    "correctIndex": 0,
+    "prize": 1500000
+  }
 ]
