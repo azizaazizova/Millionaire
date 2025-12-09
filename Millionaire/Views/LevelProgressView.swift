@@ -56,12 +56,12 @@ struct LevelProgressView: View {
                     .background(
                         ArrowButtonShape()
                             .fill(buttonGradient(for: index))
-                            .animation(.easeInOut(duration: 0.5), value: currentLevel) 
                     )
                     .overlay(
                         ArrowButtonShape()
                             .stroke(Color.white, lineWidth: 2)
                     )
+                    .animation(.easeInOut(duration: 0.5), value: currentLevel) 
                 }
                 
                 Spacer()
@@ -90,4 +90,3 @@ struct LevelProgressView: View {
         }
     }
 }
-

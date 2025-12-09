@@ -22,17 +22,17 @@ struct LevelProgressOverlay: View {
             }
             .transition(.opacity)
             .zIndex(1)
-            .onTapGesture { closeOverlay() }
+            .onTapGesture { closeOverlay(manual: true) }   // ручное закрытие
             .onAppear {
-                // Автоматическое закрытие через 4 секунды
+                // Автоматическое закрытие через 3 секунды
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    closeOverlay()
+                    closeOverlay(manual: false)            // авто‑закрытие
                 }
             }
         }
     }
 
-    private func closeOverlay() {
+    private func closeOverlay(manual: Bool) {
         show = false
         guard !isGameFinished else { return }
 
@@ -41,9 +41,14 @@ struct LevelProgressOverlay: View {
             timerRunning = false
             onTimeExpired()
         } else if isCorrect == true {
-            // Правильный ответ → переход к следующему вопросу
-            onNextQuestion()
-            timerRunning = true
+            if manual {
+                // ручное закрытие → просто продолжаем таймер
+                timerRunning = true
+            } else {
+                // авто‑закрытие → переход к следующему вопросу
+                onNextQuestion()
+                timerRunning = true
+            }
         }
     }
 }

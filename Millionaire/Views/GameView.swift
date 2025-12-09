@@ -40,7 +40,7 @@ struct GameView: View {
                             question: viewModel.currentQuestion.question
                         )
 
-                        Spacer(minLength: 40)
+                        Spacer(minLength: 30)
 
                         VStack(spacing: 18) {
                             AnswersBlockView(
@@ -91,8 +91,7 @@ struct GameView: View {
                             )
                             .padding(.top, 8)
 
-                            // Spacer, чтобы поднять блок выше
-                            Spacer(minLength: 40)
+                           Spacer(minLength: 30)
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 10)
@@ -181,6 +180,11 @@ struct GameView: View {
                     timerRunning = true
                     secondChanceUsed = true
                     viewModel.autoSecondChanceActivated = false
+                }
+            }
+            .onChange(of: showProgressOverlay) { _, isShown in
+                if !isShown && !viewModel.isGameFinished {
+                    timerRunning = true
                 }
             }
             .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
