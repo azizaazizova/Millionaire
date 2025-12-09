@@ -31,38 +31,44 @@ struct RandomSpot: Identifiable {
 }
 
 // MARK: - Фон с градиентом и мягкими пятнами
-extension View {
-    func millionaireBackground(spots: [RandomSpot] = (0..<6).map { _ in RandomSpot() }) -> some View {
-        self
-            .background(
-                GeometryReader { geo in
-                    ZStack {
-                        // Градиентный фон с голубым акцентом
-                        LinearGradient(
-                            gradient: Gradient(stops: [
-                                .init(color: Color(hex: "#3A4F8B"), location: 0.0),   // верхний синий
-                                .init(color: Color(hex: "#25B1FF"), location: 0.5),   // голубой акцент в центре
-                                .init(color: Color(hex: "#2F3F6B"), location: 1.0)    // нижний синий
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .ignoresSafeArea()
+struct MillionaireBackground: View {
+    private let spots: [RandomSpot] = (0..<6).map { _ in RandomSpot() }
 
-                        // Мягкие чёрные пятна
-                        ForEach(spots) { spot in
-                            Circle()
-                                .fill(Color.black.opacity(spot.opacity))
-                                .frame(width: spot.radius, height: spot.radius)
-                                .blur(radius: 60)
-                                .position(
-                                    x: spot.x * geo.size.width,
-                                    y: spot.y * geo.size.height
-                                )
-                        }
-                    }
-                    .allowsHitTesting(false)
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                // Градиентный фон с голубым акцентом
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: Color(hex: "#3A4F8B"), location: 0.0),   // верхний синий
+                        .init(color: Color(hex: "#25B1FF"), location: 0.5),   // голубой акцент
+                        .init(color: Color(hex: "#2F3F6B"), location: 1.0)    // нижний синий
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+
+                // Мягкие чёрные пятна
+                ForEach(spots) { spot in
+                    Circle()
+                        .fill(Color.black.opacity(spot.opacity))
+                        .frame(width: spot.radius, height: spot.radius)
+                        .blur(radius: 60)
+                        .position(
+                            x: spot.x * geo.size.width,
+                            y: spot.y * geo.size.height
+                        )
                 }
-            )
+            }
+            .allowsHitTesting(false)
+        }
+    }
+}
+
+// MARK: - Удобный модификатор
+extension View {
+    func millionaireBackground() -> some View {
+        self.background(MillionaireBackground())
     }
 }

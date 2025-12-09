@@ -10,8 +10,15 @@ class GameViewModel: ObservableObject {
     @Published var isCorrect: Bool? = nil
     @Published var hiddenIndices: Set<Int> = []
     @Published var wonAmount: Int = 0
+    @Published var guaranteedPrize: Int = 0   // несгораемая сумма
     @Published var secondChanceActive: Bool = false
     @Published var isFinished: Bool = false
+    @Published var showSecondChanceAlert: Bool = false
+    @Published var resetTimer: Bool = false
+    @Published var autoSecondChanceActivated: Bool = false
+
+
+
 
     private let guaranteedLevels: [Int: Int] = [
         4: 1000,
@@ -33,6 +40,7 @@ class GameViewModel: ObservableObject {
             let safeIndex = max(0, min(saved.levelIndex, questions.count - 1))
             self.currentIndex = safeIndex
             self.wonAmount = saved.wonAmount
+            self.guaranteedPrize = guaranteedLevels[safeIndex] ?? 0
         }
     }
 
@@ -53,16 +61,23 @@ class GameViewModel: ObservableObject {
 
         if isCorrect == true {
             wonAmount = currentQuestion.prize
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.goToNextQuestion()
+
+            // фиксируем несгораемую сумму, если достигли уровня
+            if let safePrize = guaranteedLevels[currentIndex] {
+                guaranteedPrize = safePrize
             }
-        } else if secondChanceActive {
-            secondChanceActive = false
+
+        } else if !secondChanceActive {
+            secondChanceActive = true
+            showSecondChanceAlert = true // триггерим алерт
+            autoSecondChanceActivated = true   // сигнал в GameView
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.selectedAnswer = nil
                 self.isCorrect = nil
             }
         } else {
+            // если подсказка уже была использована — завершаем игру
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.finishWithGuaranteedPrize()
             }
@@ -79,17 +94,18 @@ class GameViewModel: ObservableObject {
             currentIndex += 1
             saveProgress()
         } else {
-            wonAmount = questions.last?.prize ?? 0
+            wonAmount = questions.last?.prize ?? guaranteedPrize
             finishGame()
         }
     }
 
     func finishGame() {
         if wonAmount == 0 {
-            let fallback = guaranteedLevels
-                .filter { $0.key <= currentIndex }
-                .sorted { $0.key > $1.key }
-                .first?.value ?? 0
+            let fallback = guaranteedPrize > 0 ? guaranteedPrize :
+                guaranteedLevels
+                    .filter { $0.key <= currentIndex }
+                    .sorted { $0.key > $1.key }
+                    .first?.value ?? 0
             wonAmount = fallback
         }
         isFinished = true
@@ -97,7 +113,7 @@ class GameViewModel: ObservableObject {
     }
 
     func timeExpired() {
-            finishGame()
+        finishGame()
     }
 
     func cashOut() {
@@ -106,10 +122,11 @@ class GameViewModel: ObservableObject {
     }
 
     private func finishWithGuaranteedPrize() {
-        let fallback = guaranteedLevels
-            .filter { $0.key <= currentIndex }
-            .sorted { $0.key > $1.key }
-            .first?.value ?? 0
+        let fallback = guaranteedPrize > 0 ? guaranteedPrize :
+            guaranteedLevels
+                .filter { $0.key <= currentIndex }
+                .sorted { $0.key > $1.key }
+                .first?.value ?? 0
         wonAmount = fallback
         finishGame()
     }
@@ -136,23 +153,47 @@ class GameViewModel: ObservableObject {
         let correct = currentQuestion.correctIndex
         var percentages: [Int: Int] = [:]
 
-        let correctPercent = Int.random(in: 40...60)
+        // правильный ответ получает 65–75%
+        var correctPercent = Int.random(in: 65...75)
         percentages[correct] = correctPercent
 
         let remaining = 100 - correctPercent
         let wrongAnswers = currentQuestion.answers.indices.filter { $0 != correct }
-        var distributed = wrongAnswers.map { _ in Int.random(in: 10...30) }
 
+        // распределяем остаток между неправильными
+        var distributed = wrongAnswers.map { _ in Int.random(in: 5...20) }
         let sum = distributed.reduce(0, +)
+
         for i in 0..<distributed.count {
             distributed[i] = Int(Double(distributed[i]) / Double(sum) * Double(remaining))
         }
-        for (i, idx) in wrongAnswers.enumerated() {
-            percentages[idx] = distributed[i]
+
+        // корректируем последний элемент массива distributed, чтобы сумма была ровно remaining
+        let distributedSum = distributed.reduce(0, +)
+        if let lastIdx = distributed.indices.last {
+            distributed[lastIdx] += (remaining - distributedSum)
         }
 
-        return percentages.map { (answer: currentQuestion.answers[$0.key], percent: $0.value) }
+        for (i, idx) in wrongAnswers.enumerated() {
+            let noise = Int.random(in: -2...2)
+            percentages[idx] = max(0, distributed[i] + noise)
+        }
+        if let noise = [-2, -1, 0, 1, 2].randomElement() {
+            correctPercent = max(0, min(100, correctPercent + noise))
+            percentages[correct] = correctPercent
+        }
+
+        let total = percentages.values.reduce(0, +)
+
+        let fallbackKey = wrongAnswers.last ?? correct
+        percentages[fallbackKey] = max(0, (percentages[fallbackKey] ?? 0) + (100 - total))
+
+        // собираем результат в порядке исходных ответов
+        return currentQuestion.answers.indices.map { idx in
+            (answer: currentQuestion.answers[idx], percent: percentages[idx] ?? 0)
+        }
     }
+
 
     func useSecondChance() -> String {
         guard !isGameFinished else { return "Игра завершена" }

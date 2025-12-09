@@ -3,22 +3,37 @@ import SwiftUI
 struct ResultView: View {
     let persistence: PersistenceService
     let prize: Int
-    let didWin: Bool       // победа — дошёл до конца
-    let cashedOut: Bool    // вышел по кнопке "Забрать деньги"
-
+    let didWin: Bool
+    let cashedOut: Bool
+    let level: Int
+    
     @Environment(\.dismiss) var dismiss
     @State private var animatePrize = false
     @State private var startNewGame = false
-
+    
     var body: some View {
         ZStack {
-            Color.clear.millionaireBackground().ignoresSafeArea()
-
+            MillionaireBackground()
+                .ignoresSafeArea()
+            
             VStack(spacing: 32) {
+                // Лого с наложением
+                Image("logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 100)
+                    .offset(y: 20)
+                    .padding(.top, 16)
+                
                 Text(resultTitle)
                     .font(.largeTitle).bold()
                     .foregroundColor(.white)
-
+                
+                // Добавляем текст уровня
+                Text("Level \(level)")
+                    .font(.title3)
+                    .foregroundColor(.gray.opacity(0.9))
+                
                 Text("Ваш приз: $\(prize)")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(prizeColor)
@@ -26,7 +41,7 @@ struct ResultView: View {
                     .opacity(animatePrize ? 1 : 0)
                     .animation(.easeOut(duration: 0.8), value: animatePrize)
                     .onAppear { animatePrize = true }
-
+                
                 VStack(spacing: 16) {
                     Button {
                         persistence.save(nil)
@@ -34,7 +49,7 @@ struct ResultView: View {
                     } label: {
                         BrandButton(title: "Играть снова")
                     }
-
+                    
                     Button {
                         persistence.save(nil)
                         dismiss()
@@ -42,17 +57,17 @@ struct ResultView: View {
                         BrandButton(title: "На главную")
                     }
                 }
+                
+                Spacer()
             }
             .padding()
         }
-        //  убираем кнопку назад
         .navigationBarBackButtonHidden(true)
-        // если нужен переход на новую игру
         .navigationDestination(isPresented: $startNewGame) {
             GameView(persistence: persistence)
         }
     }
-
+    
     private var resultTitle: String {
         if didWin {
             return "Поздравляем! Вы выиграли!"
@@ -62,14 +77,14 @@ struct ResultView: View {
             return "Игра завершена"
         }
     }
-
+    
     private var prizeColor: Color {
         if didWin {
-            return .green
+            return .green                // победа → зелёный
         } else if cashedOut {
-            return .blue
+            return Color.orange           // забрал деньги → золотой/оранжевый
         } else {
-            return .yellow
+            return Color(red: 0.7, green: 0, blue: 0) // проигрыш → красный
         }
     }
 }

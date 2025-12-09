@@ -7,17 +7,39 @@ struct LevelProgressView: View {
         "$16,000", "$32,000", "$64,000", "$125,000",
         "$250,000", "$500,000", "$1,000,000"
     ]
-
+    
     let currentLevel: Int
     let onCashOut: () -> Void
-
+    
     let guaranteedIndices: Set<Int> = [4, 9, 14]
-
+    
+    private static let background = MillionaireBackground()
+    
     var body: some View {
         ZStack {
-            Color.clear.millionaireBackground().ignoresSafeArea()
-
+            LevelProgressView.background.ignoresSafeArea()
+            
+            // Кнопка CashOut
+            VStack {
+                HStack {
+                    Button(action: onCashOut) {
+                        Image("withdrawal")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 40)
+                            .padding(10)
+                    }
+                    Spacer()
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            
+            // Лестница уровней
             VStack(spacing: 0) {
+                Spacer(minLength: 80)
+                
                 ForEach(levels.indices.reversed(), id: \.self) { index in
                     HStack {
                         Text("Вопрос \(index + 1)")
@@ -30,49 +52,42 @@ struct LevelProgressView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .frame(maxWidth: .infinity, maxHeight: 56)
+                    .frame(maxWidth: 300, maxHeight: 56)
                     .background(
                         ArrowButtonShape()
                             .fill(buttonGradient(for: index))
+                            .animation(.easeInOut(duration: 0.5), value: currentLevel) 
                     )
                     .overlay(
                         ArrowButtonShape()
                             .stroke(Color.white, lineWidth: 2)
                     )
-                    .padding(.horizontal, 24)
                 }
-
+                
                 Spacer()
-
-                Button(action: onCashOut) {
-                    Text("Забрать деньги")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(
-                            Capsule()
-                                .fill(Color.green.opacity(0.8))
-                        )
-                }
-                .padding(.bottom, 20)
             }
-            .padding(.horizontal)
+            
+            // Лого
+            VStack {
+                Image("logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 100)
+                    .offset(y: 18)
+                Spacer()
+            }
         }
         .navigationBarBackButtonHidden(true)
     }
-
+    
     private func buttonGradient(for index: Int) -> LinearGradient {
         if index == currentLevel {
-            return AppGradient.yellowOrange.linear
+            return AppGradient.greenMint.linear // активный уровень
         } else if guaranteedIndices.contains(index) {
-            return AppGradient.darkBlue.linear
+            return AppGradient.blueHighlight.linear
         } else {
-            return LinearGradient(
-                colors: [Color.gray.opacity(0.3), Color.gray.opacity(0.5)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            return AppGradient.darkBlue.linear
         }
     }
 }
+

@@ -3,57 +3,41 @@ import SwiftUI
 // MARK: - Градиенты приложения
 
 enum AppGradient {
-    case yellowOrange
-    case greenMint
-    case redGold
-    case darkBlue
+    case yellowOrange //кнопки
+    case greenMint //правильный ответ
+    case redGold // неправильный ответ
+    case darkBlue //дефолт
+    case blueHighlight   // для несгораемых
 
     var linear: LinearGradient {
         switch self {
         case .yellowOrange:
             return LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: Color(hex: "#E1CF30"), location: 0.0),
-                    .init(color: Color(hex: "#E19A30"), location: 0.3333),
-                    .init(color: Color(hex: "#E19A30"), location: 0.7969),
-                    .init(color: Color(hex: "#E1CF30"), location: 1.0)
-                ]),
+                colors: [Color(hex: "#FFD700"), Color(hex: "#FF8C00")],
                 startPoint: .top,
                 endPoint: .bottom
             )
-
         case .greenMint:
             return LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: Color(hex: "#3B8E14"), location: 0.0),
-                    .init(color: Color(hex: "#266608"), location: 0.4427),
-                    .init(color: Color(hex: "#266608"), location: 0.7969),
-                    .init(color: Color(hex: "#3D881A"), location: 1.0)
-                ]),
+                colors: [Color(hex: "#3B8E14"), Color(hex: "#266608")],
                 startPoint: .top,
                 endPoint: .bottom
             )
-
         case .redGold:
             return LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: Color(hex: "#B4411C"), location: 0.0),
-                    .init(color: Color(hex: "#832102"), location: 0.3333),
-                    .init(color: Color(hex: "#832102"), location: 0.7969),
-                    .init(color: Color(hex: "#B43E19"), location: 1.0)
-                ]),
+                colors: [Color(hex: "#B4411C"), Color(hex: "#832102")],
                 startPoint: .top,
                 endPoint: .bottom
             )
-
         case .darkBlue:
             return LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: Color(hex: "#025D83"), location: 0.0),
-                    .init(color: Color(hex: "#022B54"), location: 0.3333),
-                    .init(color: Color(hex: "#020631"), location: 0.7969),
-                    .init(color: Color(hex: "#083C66"), location: 1.0)
-                ]),
+                colors: [Color(hex: "#1C2A4A"), Color(hex: "#2F3F6B")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        case .blueHighlight:
+            return LinearGradient(
+                colors: [Color(hex: "#25B1FF"), Color(hex: "#083C66")],
                 startPoint: .top,
                 endPoint: .bottom
             )
