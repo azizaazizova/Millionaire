@@ -10,9 +10,25 @@
 		0514F3982ED5F7B4000DAEA6 /* Millionaire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Millionaire.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		05F5D7A92EE8B3F80097E66E /* Exceptions for "Millionaire" folder in "Millionaire" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				docs/game.png,
+				docs/home.png,
+				docs/result.png,
+				README.md,
+			);
+			target = 0514F3972ED5F7B4000DAEA6 /* Millionaire */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0514F39A2ED5F7B4000DAEA6 /* Millionaire */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				05F5D7A92EE8B3F80097E66E /* Exceptions for "Millionaire" folder in "Millionaire" target */,
+			);
 			path = Millionaire;
 			sourceTree = "<group>";
 		};
