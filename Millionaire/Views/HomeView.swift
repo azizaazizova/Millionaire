@@ -25,23 +25,33 @@ struct HomeView: View {
                         .foregroundColor(.white)
 
                     if vm.canContinue {
-                        Text("Приз: $\(vm.lastPrize)")
+                        Text("Лучший результат: $\(vm.lastPrize)")
                             .font(.headline)
                             .foregroundColor(.yellow)
 
                         NavigationLink(destination: GameView(persistence: persistence)) {
-                            BrandButton(title: "Продолжить игру")
+                            BrandButton(title: "Продолжить игру",
+                                        gradient: AppGradient.yellowOrange.linear)
                         }
-                    }
 
-                    // Новая игра — очищаем сохранение
-                    NavigationLink(destination: GameView(persistence: persistence)) {
-                        BrandButton(title: "Новая игра")
+                        NavigationLink(destination: GameView(persistence: persistence)) {
+                            BrandButton(title: "Новая игра",
+                                        gradient: AppGradient.darkBlue.linear)
+                        }
+                        .simultaneousGesture(TapGesture().onEnded {
+                            persistence.save(nil)
+                            vm.refreshFromPersistence()
+                        })
+                    } else {
+                        NavigationLink(destination: GameView(persistence: persistence)) {
+                            BrandButton(title: "Новая игра",
+                                        gradient: AppGradient.yellowOrange.linear) 
+                        }
+                        .simultaneousGesture(TapGesture().onEnded {
+                            persistence.save(nil)
+                            vm.refreshFromPersistence()
+                        })
                     }
-                    .simultaneousGesture(TapGesture().onEnded {
-                        persistence.save(nil)   // сброс прогресса
-                        vm.refreshFromPersistence()
-                    })
 
                     Spacer(minLength: 20)
                 }
@@ -66,6 +76,3 @@ struct HomeView: View {
     }
 }
 
-#Preview {
-    HomeView(persistence: PersistenceService())
-}

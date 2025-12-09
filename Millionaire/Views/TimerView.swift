@@ -22,7 +22,7 @@ struct TimerView: View {
         )
     }
 
-    // 🎨 Цвет фона
+    // Цвет фона
     private func backgroundColor() -> Color {
         switch seconds {
         case 0...5: return Color.red.opacity(0.5)     // последние секунды — тревожный красный
@@ -31,7 +31,7 @@ struct TimerView: View {
         }
     }
 
-    // 🎨 Цвет текста и иконки
+    // Цвет текста и иконки
     private func labelColor() -> Color {
         switch seconds {
         case 0...5: return .red   // на красном фоне — белый текст
