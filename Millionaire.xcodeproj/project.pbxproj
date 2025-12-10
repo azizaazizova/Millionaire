@@ -8,16 +8,16 @@
 
 /* Begin PBXFileReference section */
 		0514F3982ED5F7B4000DAEA6 /* Millionaire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Millionaire.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05F5D7A62EE8B3E30097E66E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		05F5D7A92EE8B3F80097E66E /* Exceptions for "Millionaire" folder in "Millionaire" target */ = {
+		05F5D7B62EE961AB0097E66E /* Exceptions for "docs" folder in "Millionaire" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				docs/game.png,
-				docs/home.png,
-				docs/result.png,
-				README.md,
+				game.png,
+				home.png,
+				result.png,
 			);
 			target = 0514F3972ED5F7B4000DAEA6 /* Millionaire */;
 		};
@@ -26,10 +26,15 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0514F39A2ED5F7B4000DAEA6 /* Millionaire */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				05F5D7A92EE8B3F80097E66E /* Exceptions for "Millionaire" folder in "Millionaire" target */,
-			);
 			path = Millionaire;
+			sourceTree = "<group>";
+		};
+		05F5D7B52EE961AB0097E66E /* docs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				05F5D7B62EE961AB0097E66E /* Exceptions for "docs" folder in "Millionaire" target */,
+			);
+			path = docs;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -48,6 +53,8 @@
 		0514F38F2ED5F7B4000DAEA6 = {
 			isa = PBXGroup;
 			children = (
+				05F5D7A62EE8B3E30097E66E /* README.md */,
+				05F5D7B52EE961AB0097E66E /* docs */,
 				0514F39A2ED5F7B4000DAEA6 /* Millionaire */,
 				0514F3992ED5F7B4000DAEA6 /* Products */,
 			);
@@ -78,6 +85,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				0514F39A2ED5F7B4000DAEA6 /* Millionaire */,
+				05F5D7B52EE961AB0097E66E /* docs */,
 			);
 			name = Millionaire;
 			packageProductDependencies = (
